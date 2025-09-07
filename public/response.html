@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Payment Response</title>
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        text-align: center;
+        padding: 50px;
+    }
+    .success { color: green; font-size: 22px; font-weight: bold; }
+    .failed { color: red; font-size: 22px; font-weight: bold; }
+    details { margin-top: 30px; }
+    pre {
+        background: #f4f4f4;
+        padding: 15px;
+        border-radius: 5px;
+        text-align: left;
+        overflow-x: auto;
+    }
+</style>
+</head>
+<body>
+<h2>PayU Transaction Response</h2>
+<p id="statusMessage"></p>
+
+<details>
+    <summary>Show Raw Response</summary>
+    <pre id="response"></pre>
+</details>
+
+<script>
+    const params = new URLSearchParams(window.location.search);
+    let response = {};
+
+    // Step 1: Check if `data` param exists
+    if(params.has("data")) {
+        try {
+            // Decode URL-encoded JSON
+            const dataStr = decodeURIComponent(params.get("data"));
+            response = JSON.parse(dataStr);
+        } catch(e) {
+            console.error("Failed to parse `data` JSON:", e);
+        }
+    } else {
+        // fallback: copy all params
+        for (const [k, v] of params.entries()) {
+            response[k] = v;
+        }
+    }
+
+    // Show raw JSON
+    document.getElementById("response").textContent = JSON.stringify(response, null, 2);
+
+    // Read paymentStatus from decoded data
+    const status = response.paymentStatus ? response.paymentStatus.toUpperCase() : null;
+    const statusMessage = document.getElementById("statusMessage");
+
+    if(status === "SUCCESS") {
+        statusMessage.textContent = "✅ Payment Successful! Thank you for your payment.";
+        statusMessage.className = "success";
+    } else if(status === "FAILED" || status === "FAILURE") {
+        statusMessage.textContent = "❌ Payment Failed. Please try again.";
+        statusMessage.className = "failed";
+    } else {
+        statusMessage.textContent = "ℹ️ Payment status unknown.";
+    }
+</script>
+</body>
+</html>

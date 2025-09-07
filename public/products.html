@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Select Product</title>
+  <style>
+    /* Hide number input arrows in most browsers */
+    input[type=number]::-webkit-inner-spin-button, 
+    input[type=number]::-webkit-outer-spin-button { 
+        -webkit-appearance: none; 
+        margin: 0; 
+    }
+    input[type=number] {
+        -moz-appearance: textfield; /* Firefox */
+    }
+  </style>
+</head>
+<body>
+  <h1>Select a Product</h1>
+  <form action="billing.html" method="GET" id="productForm">
+    <label>
+      <input type="radio" name="product" value="Product 1" checked> Product 1 (₹10)
+    </label><br>
+    <label>
+      <input type="radio" name="product" value="Product 2"> Product 2 (₹20)
+    </label><br>
+    <label>
+      <input type="radio" name="product" value="Product 3" id="product3Radio"> Product 3 (₹
+      <input type="number" name="product3Amount" id="product3Amount" value="2" min="1" step="1" style="width:80px;">
+      )
+    </label><br><br>
+    <button type="submit">Next</button>
+  </form>
+
+  <script>
+    const form = document.getElementById("productForm");
+    const product3Radio = document.getElementById("product3Radio");
+    const product3Amount = document.getElementById("product3Amount");
+
+    // Automatically select Product 3 if user edits the amount
+    product3Amount.addEventListener("input", () => {
+      product3Radio.checked = true;
+    });
+
+    // Validate amount before submitting
+    form.addEventListener("submit", (e) => {
+      if(product3Radio.checked) {
+        const amount = parseInt(product3Amount.value);
+        if(isNaN(amount) || amount <= 0) {
+          e.preventDefault();
+          alert("Please enter a valid amount for Product 3.");
+        } else {
+          // Ensure integer value
+          product3Amount.value = amount;
+        }
+      }
+    });
+  </script>
+</body>
+</html>
